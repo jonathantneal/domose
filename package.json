@@ -1,0 +1,54 @@
+{
+  "name": "domose",
+  "version": "1.0.0",
+  "description": "Old Fashioned DOM Sugar",
+  "author": "Jonathan Neal <jonathantneal@hotmail.com>",
+  "license": "CC0-1.0",
+  "repository": "jonathantneal/domose",
+  "homepage": "https://github.com/jonathantneal/domose#readme",
+  "bugs": "https://github.com/jonathantneal/domose/issues",
+  "main": "domose.cjs.js",
+  "module": "domose.js",
+  "files": [
+    "domose.js",
+    "domose.cjs.js"
+  ],
+  "scripts": {
+    "build": "babel domose.js --out-file domose.cjs.js",
+    "clean": "git clean -X -d -f",
+    "prepublish": "npm run test && npm run build",
+    "test": "echo 'Running tests...'; npm run test:js",
+    "test:js": "eslint domose.js --cache --ignore-pattern .gitignore"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^3.19.0",
+    "eslint-config-dev": "2.0.0",
+    "pre-commit": "^1.2.2"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "loose": true,
+          "targets": {
+            "node": "4"
+          }
+        }
+      ]
+    ]
+  },
+  "eslintConfig": {
+    "extends": "dev"
+  },
+  "keywords": [
+    "dom",
+    "sugar"
+  ]
+}
