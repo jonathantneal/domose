@@ -91,7 +91,7 @@ these when your supported browsers can’t do them on their own.
 ### The $append Method
 
 The `$append` method appends children to an element. It returns the element. If
-possible, use the native `append`, which works the same way.
+possible, use the native `append`, which works in a similar way.
 
 ```js
 import { $append } from 'domose';
@@ -118,7 +118,7 @@ $remove(element);
 ### The $replace Method
 
 The `$replace` method replaces an element within another element. It returns
-the element. If possible, use the native `remove`, which works the same way.
+the element. If possible, use the native `replaceWith`, which works the same way.
 
 ```js
 import { $replace } from 'domose';
@@ -131,8 +131,8 @@ $replace(element, replacer);
 ### The $dispatch Method
 
 The `$dispatch` method dispatches an event on an element. It returns the
-element. If possible, probably use the native `new CustomEvent()`, even though
-it’s way uglier to write out.
+element. If possible, probably use the native `new MouseEvent()`, `new CustomEvent()`, etc even though
+they're way uglier to write out.
 
 ```js
 import { $dispatch } from 'domose';
