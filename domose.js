@@ -168,9 +168,10 @@ export {
 	$,
 	$_,
 	$append,
-	$empty,
-	$wrap,
-	$replace,
 	$dispatch,
-	$fetch
+	$empty,
+	$fetch,
+	$remove,
+	$replace,
+	$wrap
 };
