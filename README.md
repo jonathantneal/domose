@@ -6,7 +6,7 @@
 you delicious DOM functionality in every browser.
 
 ```sh
-npm install jonathantneal/domose --save
+npm install domose --save
 ```
 
 Half of this stuff should be native, and I hope one day it is. The other half
