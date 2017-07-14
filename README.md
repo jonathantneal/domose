@@ -11,7 +11,8 @@ npm install jonathantneal/domose --save
 
 Half of this stuff should be native, and I hope one day it is. The other half
 is here because I still support IE9 or IE11 often enough. The good news is,
-it’s all super tiny, so even using the whole thing costs about 500 bytes.
+it’s all modular, so you can just use the parts you need, and it’s also super
+tiny, so even using the whole thing costs about 500 bytes.
 
 ---
 
