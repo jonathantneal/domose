@@ -61,6 +61,17 @@ function $_(element, rawattrs) {
 	return element;
 }
 
+/* Insert content after an element
+/* ========================================================================== */
+
+function $after(element, content) {
+	// usage: $after(element, selector);
+
+	element.parentNode.insertBefore($asNode(content), element.nextElementSibling);
+
+	return element;
+}
+
 /* Appends children to an element
 /* ========================================================================== */
 
@@ -82,6 +93,36 @@ function $append(element, children) {
 
 function $asNode(content) {
 	return content instanceof Node ? content : document.createTextNode(content);
+}
+
+/* Insert content before an element
+/* ========================================================================== */
+
+function $before(element, content) {
+	// usage: $before(element, selector);
+
+	element.parentNode.insertBefore($asNode(content), element);
+
+	return element;
+}
+
+/* Gets the closest ancestor element that matches the given selector
+/* ========================================================================== */
+
+function $closest(rawelement, selector) {
+	// usage: $closest(element, selector);
+
+	let element = rawelement;
+
+	while (element && 1 === element.nodeType) {
+		if ($matches(element, selector)) {
+			return element;
+		}
+
+		element = element.parentNode;
+	}
+
+	return null;
 }
 
 /* Dispatches an event on an element
@@ -137,6 +178,23 @@ function $fetch(url, callback) {
 	return xhr;
 }
 
+/* Tests whether or not a DOM element matches a given selector
+/* ========================================================================== */
+
+function $matches(element, selector) {
+	// usage: $matches(element, selector);
+
+	const elements = (element.document || element.ownerDocument).querySelectorAll(selector);
+
+	let index = 0;
+
+	while (elements[index] && elements[index] !== element) {
+		++index;
+	}
+
+	return Boolean(elements[index]);
+}
+
 /* Removes an element from its parent
 /* ========================================================================== */
 
@@ -174,11 +232,15 @@ export default $;
 export {
 	$,
 	$_,
+	$after,
 	$append,
 	$asNode,
+	$before,
+	$closest,
 	$dispatch,
 	$empty,
 	$fetch,
+	$matches,
 	$remove,
 	$replaceWith,
 	$wrapWith
