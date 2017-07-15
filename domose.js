@@ -149,8 +149,8 @@ function $remove(element) {
 /* Replaces an element within another element
 /* ========================================================================== */
 
-function $replace(element, replacer) {
-	// usage: $replace(element, replacer);
+function $replaceWith(element, replacer) {
+	// usage: $replaceWith(element, replacer);
 
 	element.parentNode.replaceChild($asNode(replacer), element);
 
@@ -160,8 +160,8 @@ function $replace(element, replacer) {
 /* Wraps an element within another element
 /* ========================================================================== */
 
-function $wrap(element, wrapper) {
-	// usage: $wrap(element, wrapper);
+function $wrapWith(element, wrapper) {
+	// usage: $wrapWith(element, wrapper);
 
 	return element.parentNode.insertBefore(wrapper, element).appendChild(element);
 }
@@ -180,6 +180,6 @@ export {
 	$empty,
 	$fetch,
 	$remove,
-	$replace,
-	$wrap
+	$replaceWith,
+	$wrapWith
 };
