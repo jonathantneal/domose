@@ -61,13 +61,16 @@ function $_(element, srcattrs) {
 	return element;
 }
 
-/* Insert content after an element
+/* Insert siblings after an element
 /* ========================================================================== */
 
-function $after(element, content) {
-	// usage: $after(element, selector);
+function $after(element, siblings) {
+	// usage: $after(element, [ sibling1, sibling2 ]);
+	// usage: $after(element, [ sibling1, 'a new text node' ]);
 
-	element.parentNode.insertBefore($asNode(content), element.nextElementSibling);
+	for (let index in siblings) {
+		element.parentNode.insertBefore(siblings[index], element.nextElementSibling);
+	}
 
 	return element;
 }
@@ -95,18 +98,21 @@ function $asNode(content) {
 	return content instanceof Node ? content : document.createTextNode(content);
 }
 
-/* Insert content before an element
+/* Insert siblings before an element
 /* ========================================================================== */
 
-function $before(element, content) {
-	// usage: $before(element, selector);
+function $before(element, siblings) {
+	// usage: $before(element, [ sibling1, sibling2 ]);
+	// usage: $before(element, [ sibling1, 'a new text node' ]);
 
-	element.parentNode.insertBefore($asNode(content), element);
+	for (let index in siblings) {
+		element.parentNode.insertBefore(siblings[index], element);
+	}
 
 	return element;
 }
 
-/* Gets the closest ancestor element that matches the given selector
+/* Returns the closest ancestor element that matches a given selector
 /* ========================================================================== */
 
 function $closest(srcelement, selector) {
@@ -178,7 +184,7 @@ function $fetch(url, callback) {
 	return xhr;
 }
 
-/* Tests whether or not a DOM element matches a given selector
+/* Returns whether or not a DOM element matches a given selector
 /* ========================================================================== */
 
 function $matches(element, selector) {
