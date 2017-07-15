@@ -36,22 +36,6 @@ function $(id, attrs, children) {
 	return element;
 }
 
-/* Appends children to an element
-/* ========================================================================== */
-
-function $append(element, children) {
-	// usage: $append(element, [ child1, child2 ]);
-	// usage: $append(element, [ child1, 'a new text node' ]);
-
-	for (let index in children) {
-		element.appendChild(
-			children[index] instanceof Node ? children[index] : document.createTextNode(children[index])
-		);
-	}
-
-	return element;
-}
-
 /* Removes attributes and events from an element
 /* ========================================================================== */
 
@@ -77,7 +61,39 @@ function $_(element, rawattrs) {
 	return element;
 }
 
-/* Removes all the children in an element and optionally adds new children
+/* Appends children to an element
+/* ========================================================================== */
+
+function $append(element, children) {
+	// usage: $append(element, [ child1, child2 ]);
+	// usage: $append(element, [ child1, 'a new text node' ]);
+
+	for (let index in children) {
+		element.appendChild(
+			children[index] instanceof Node ? children[index] : document.createTextNode(children[index])
+		);
+	}
+
+	return element;
+}
+
+/* Dispatches an event on an element
+/* ========================================================================== */
+
+function $dispatch(type, element, detail) {
+	// usage: $dispatch('click', element);
+	// usage: $dispatch('custom', element, { some: 'detail value' });
+
+	const event = document.createEvent('CustomEvent');
+
+	event.initCustomEvent(type, true, true, detail);
+
+	element.dispatchEvent(event);
+
+	return element;
+}
+
+/* Removes all the children of an element and optionally adds new children
 /* ========================================================================== */
 
 function $empty(element, children) {
@@ -92,6 +108,26 @@ function $empty(element, children) {
 	$append(element, children);
 
 	return element;
+}
+
+/* Fetches response text from a URL and passes it to a callback
+/* ========================================================================== */
+
+function $fetch(url, callback) {
+	// usage: $fetch('api?foo=bar', (responseText) => {});
+
+	const xhr = $(new XMLHttpRequest(), {
+		onreadystatechange: () => {
+			if (4 === xhr.readyState && 200 === xhr.status) {
+				callback(xhr.responseText); // eslint-disable-line callback-return
+			}
+		}
+	});
+
+	xhr.open('GET', url);
+	xhr.send();
+
+	return xhr;
 }
 
 /* Removes an element from its parent
@@ -121,42 +157,6 @@ function $wrap(element, wrapper) {
 	// usage: $wrap(element, wrapper);
 
 	return element.parentNode.insertBefore(wrapper, element).appendChild(element);
-}
-
-/* Dispatches an event on an element
-/* ========================================================================== */
-
-function $dispatch(type, element, detail) {
-	// usage: $dispatch('click', element);
-	// usage: $dispatch('custom', element, { some: 'detail value' });
-
-	const event = document.createEvent('CustomEvent');
-
-	event.initCustomEvent(type, true, true, detail);
-
-	element.dispatchEvent(event);
-
-	return element;
-}
-
-/* Fetches response text from a URL and passes it to a callback
-/* ========================================================================== */
-
-function $fetch(url, callback) {
-	// usage: $fetch('api?foo=bar', (responseText) => {});
-
-	const xhr = $(new XMLHttpRequest(), {
-		onreadystatechange: () => {
-			if (4 === xhr.readyState && 200 === xhr.status) {
-				callback(xhr.responseText); // eslint-disable-line callback-return
-			}
-		}
-	});
-
-	xhr.open('GET', url);
-	xhr.send();
-
-	return xhr;
 }
 
 /* Export
