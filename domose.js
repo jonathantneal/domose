@@ -70,11 +70,18 @@ function $append(element, children) {
 
 	for (let index in children) {
 		element.appendChild(
-			children[index] instanceof Node ? children[index] : document.createTextNode(children[index])
+			$asNode(children[index])
 		);
 	}
 
 	return element;
+}
+
+/* Returns content as an Element or Text Node
+/* ========================================================================== */
+
+function $asNode(content) {
+	return content instanceof Node ? content : document.createTextNode(content);
 }
 
 /* Dispatches an event on an element
@@ -145,7 +152,7 @@ function $remove(element) {
 function $replace(element, replacer) {
 	// usage: $replace(element, replacer);
 
-	element.parentNode.replaceChild(replacer, element);
+	element.parentNode.replaceChild($asNode(replacer), element);
 
 	return element;
 }
@@ -168,6 +175,7 @@ export {
 	$,
 	$_,
 	$append,
+	$asNode,
 	$dispatch,
 	$empty,
 	$fetch,
