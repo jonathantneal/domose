@@ -39,11 +39,11 @@ function $(id, attrs, children) {
 /* Removes attributes and events from an element
 /* ========================================================================== */
 
-function $_(element, rawattrs) {
+function $_(element, srcattrs) {
 	// usage: $_(element, 'arialabel class');
 	// usage: $_(element, { 0: 'arialabel', onclick: () => {} });
 
-	const attrs = 'string' === typeof rawattrs ? rawattrs.split(' ') : rawattrs;
+	const attrs = 'string' === typeof srcattrs ? srcattrs.split(' ') : srcattrs;
 
 	for (let attr in attrs) {
 		if (/^on/.test(attr)) {
@@ -109,10 +109,10 @@ function $before(element, content) {
 /* Gets the closest ancestor element that matches the given selector
 /* ========================================================================== */
 
-function $closest(rawelement, selector) {
+function $closest(srcelement, selector) {
 	// usage: $closest(element, selector);
 
-	let element = rawelement;
+	let element = srcelement;
 
 	while (element && 1 === element.nodeType) {
 		if ($matches(element, selector)) {
