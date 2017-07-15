@@ -10,13 +10,11 @@ npm install domose --save
 ```
 
 Half of this stuff should be native, and I hope one day it is. The other half
-is here because I still support IE9 or IE11 often enough. The good news is,
+is here because I still support IE9 or Edge often enough. The good news is,
 it’s all modular, so you can just use the parts you need, and it’s also super
-tiny, so even using the whole thing costs about 500 bytes.
+tiny, so even using the whole thing costs less than 1 kilobyte.
 
----
-
-Here are some no-nonsense explanations about the functionality you’ll get.
+Here are some no-nonsense explanations about new functionality you’ll get.
 
 ### The $ Method
 
@@ -34,7 +32,7 @@ $('svg http://www.w3.org/2000/svg', { dataval: 'a data value' });
 Did I mention that `arialabel` becomes `aria-label` and `dataval` becomes
 `data-val`? I think that’s kinda cool.
 
-**Cost**: Up to 268 bytes to your gzipped script.
+**Cost**: Up to 278 bytes to your gzipped script.
 
 ### The $_ Method
 
@@ -69,30 +67,45 @@ We need a native `empty` method, I think.
 
 **Cost**: Up to 88 bytes to your gzipped script.
 
-### The $wrap Method
+### The $wrapWith Method
 
-The `$wrap` method wraps an element within another element. It returns the
+The `$wrapWith` method wraps an element within another element. It returns the
 element.
 
 ```js
-import { $wrap } from 'domose';
+import { $wrapWith } from 'domose';
 
-$wrap(element, wrapper);
+$wrapWith(element, wrapper);
 ```
 
-We also need a native `wrap` method, wouldn’t you agree?
+We also need a native `wrapWith` method, wouldn’t you agree?
 
 **Cost**: Up to 75 bytes to your gzipped script.
 
----
+## Modern DOM Methods
 
-You can also use some lesser DOM4-like functions are available to you. Use
-these when your supported browsers can’t do them on their own.
+You might also enjoy these DOM4+ methods. Use these when your supported
+browsers can’t do them on their own, and you’re not in a position to add a
+polyfill.
+
+### The $after Method
+
+The `$after` method inserts content after an element. It returns the element.
+If possible, use the native [`after`] method, which works in a similar way.
+
+```js
+import { $after } from 'domose';
+
+$after(element, [ sibling1, sibling2 ]);
+$after(element, [ sibling1, 'a new text node' ]);
+```
+
+**Cost**: Up to 98 bytes to your gzipped script.
 
 ### The $append Method
 
 The `$append` method appends children to an element. It returns the element. If
-possible, use the native `append`, which works in a similar way.
+possible, use the native [`append`] method, which works in a similar way.
 
 ```js
 import { $append } from 'domose';
@@ -103,10 +116,53 @@ $append(element, [ child1, 'a new text node' ]);
 
 **Cost**: Up to 116 bytes to your gzipped script.
 
+### The $before Method
+
+The `$before` method inserts content before an element. It returns the element.
+If possible, use the native [`before`] method, which works in a similar way.
+
+```js
+import { $before } from 'domose';
+
+$before(element, [ sibling1, sibling2 ]);
+$before(element, [ sibling1, 'a new text node' ]);
+```
+
+**Cost**: Up to 80 bytes to your gzipped script.
+
+### The $closest Method
+
+The `$closest` method returns the closest ancestor element that matches a
+given selector. If possible, use the native [`closest`] method, which works in
+a similar way.
+
+```js
+import { $closest } from 'domose';
+
+$closest(element, '.some-class');
+```
+
+**Cost**: Up to 182 bytes to your gzipped script.
+
+### The $matches Methods
+
+The `$matches` method returns whether or not a DOM element matches a given
+selector. If possible, use the native [`matches`] method, which works in a
+similar way.
+
+```js
+import { $matches } from 'domose';
+
+$matches(element, '.some-class');
+```
+
+**Cost**: Up to 128 bytes to your gzipped script.
+
 ### The $remove Method
 
 The `$remove` method removes an element from its parent. It returns the
-element. If possible, use the native `remove`, which works the same way.
+element. If possible, use the native `remove` method, which works in a similar
+way.
 
 ```js
 import { $remove } from 'domose';
@@ -116,24 +172,31 @@ $remove(element);
 
 **Cost**: Up to 69 bytes to your gzipped script.
 
-### The $replace Method
+### The $replaceWith Method
 
-The `$replace` method replaces an element within another element. It returns
-the element. If possible, use the native `replaceWith`, which works the same way.
+The `$replaceWith` method replaces an element within another element. It
+returns the element. If possible, use the native [`replaceWith`] method, which
+works in a similar way.
 
 ```js
-import { $replace } from 'domose';
+import { $replaceWith } from 'domose';
 
-$replace(element, replacer);
+$replaceWith(element, replacer);
 ```
 
 **Cost**: Up to 63 bytes to your gzipped script.
 
+## Event Fallbacks
+
+You might also enjoy these modern event methods. Use these when your supported
+browsers can’t do them on their own, and you’re not in a position to add a
+polyfill.
+
 ### The $dispatch Method
 
 The `$dispatch` method dispatches an event on an element. It returns the
-element. If possible, probably use the native `new MouseEvent()`, `new CustomEvent()`, etc even though
-they're way uglier to write out.
+element. If possible, probably use the native `new MouseEvent()`,
+`new CustomEvent()`, etc. methods, even though they're way uglier to write out.
 
 ```js
 import { $dispatch } from 'domose';
@@ -148,7 +211,7 @@ $dispatch('custom', element, { some: 'detail value' });
 
 The `$fetch` method fetches response text from a URL and passes it to a
 callback. It returns the XHR request, which is how it works. If possible,
-please use the native `fetch`, which is totally better than this.
+please use the native `fetch` method, which is totally better than this.
 
 ```js
 import { $fetch } from 'domose';
@@ -159,3 +222,11 @@ $fetch('api?foo=bar', (responseText) => { /* do something */ });
 **Cost**: Up to 159 bytes to your gzipped script.
 
 [Domose]: https://github.com/jonathantneal/domose
+
+[`after`]: http://caniuse.com/#feat=dom-manip-convenience
+[`append`]: http://caniuse.com/#feat=dom-manip-convenience
+[`before`]: http://caniuse.com/#feat=dom-manip-convenience
+[`closest`]: http://caniuse.com/#feat=element-closest
+[`matches`]: http://caniuse.com/#search=matches
+[`prepend`]: http://caniuse.com/#feat=dom-manip-convenience
+[`replaceWith`]: http://caniuse.com/#feat=dom-manip-convenience
