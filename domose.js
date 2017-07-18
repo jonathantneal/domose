@@ -9,13 +9,6 @@ function __assignSource(element, source, prefix) {
 		} else if (Object(source[key]) === source[key]) {
 			// set attributes with prefixes
 			__assignSource(element, source[key], `${prefix + key}-`);
-		} else if (/ /.test(key)) {
-			// set namespaced attributes
-			element.setAttributeNS(
-				(prefix + key).replace(/.* /, ''),
-				(prefix + key).replace(/ .*/, ''),
-				source[key]
-			);
 		} else {
 			// set attributes
 			element.setAttribute(prefix + key, source[key]);
@@ -27,15 +20,12 @@ function __assignSource(element, source, prefix) {
 /* ========================================================================== */
 
 function $assign(id) {
-	// usage: $(element, { class: 'btn', click: () => { /* listener */ } });
-	// usage: $('button', { aria: { label: 'title' } }, child);
-	// usage: $('div', child1, child2, 'a new text node');
-	// usage: $('http://www.w3.org/2000/svg|svg');
+	// $assign(element, { class: 'btn', click: () => { /* listener */ } });
+	// $assign('button', { aria: { label: 'title' } }, child);
+	// $assign('div', child1, child2, 'a new text node');
+	// $assign(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
 
-	const element = id instanceof Element ? id : / /.test(id) ? document.createElementNS(
-		id.replace(/.* /, ''),
-		id.replace(/ .*/, '')
-	) : document.createElement(id);
+	const element = id instanceof Node ? id : document.createElement(id);
 
 	[].slice.call(arguments, 1).forEach((source) => {
 		if (source instanceof Node) {
@@ -58,7 +48,7 @@ function $assign(id) {
 /* ========================================================================== */
 
 function $empty(parentNode) {
-	// usage: $empty(element);
+	// $empty(element);
 
 	while (parentNode.lastChild) {
 		parentNode.removeChild(parentNode.lastChild);
@@ -71,7 +61,7 @@ function $empty(parentNode) {
 /* ========================================================================== */
 
 function $wrapWith(childNode, element) {
-	// usage: $wrapWith(element, wrappingElement);
+	// $wrapWith(element, wrappingElement);
 
 	if (childNode.parentNode) {
 		childNode.parentNode.insertBefore(element, childNode).appendChild(childNode);
@@ -103,7 +93,7 @@ function __asFragment(nodes) {
 /* ========================================================================== */
 
 function $after(childNode) {
-	// usage: $after(element, sibling1, sibling2, 'a new text node');
+	// $after(element, sibling1, sibling2, 'a new text node');
 
 	if (childNode.parentNode) {
 		childNode.parentNode.insertBefore(
@@ -119,7 +109,7 @@ function $after(childNode) {
 /* ========================================================================== */
 
 function $append(parentNode) {
-	// usage: $append(parentNode, child1, child2, 'a new text node');
+	// $append(parentNode, child1, child2, 'a new text node');
 
 	parentNode.append(
 		__asFragment(arguments)
@@ -132,7 +122,7 @@ function $append(parentNode) {
 /* ========================================================================== */
 
 function $before(element) {
-	// usage: $before(element, sibling1, sibling2, 'a new text node');
+	// $before(element, sibling1, sibling2, 'a new text node');
 
 	if (element.parentNode) {
 		element.parentNode.insertBefore(
@@ -148,7 +138,7 @@ function $before(element) {
 /* ========================================================================== */
 
 function $closest(element, selectors) {
-	// usage: $closest(element, selectors);
+	// $closest(element, selectors);
 
 	let target = element;
 
@@ -167,7 +157,7 @@ function $closest(element, selectors) {
 /* ========================================================================== */
 
 function $matches(element, selectors) {
-	// usage: $matches(element, selectors);
+	// $matches(element, selectors);
 
 	const elements = element.parentNode.querySelectorAll(selectors);
 
@@ -184,7 +174,7 @@ function $matches(element, selectors) {
 /* ========================================================================== */
 
 function $prepend(parentNode) {
-	// usage: $prepend(element, child1, child2, 'a new text node');
+	// $prepend(element, child1, child2, 'a new text node');
 
 	parentNode.insertBefore(
 		__asFragment(arguments),
@@ -198,7 +188,7 @@ function $prepend(parentNode) {
 /* ========================================================================== */
 
 function $remove(childNode) {
-	// usage: $remove(element);
+	// $remove(element);
 
 	if (childNode.parentNode) {
 		childNode.parentNode.removeChild(childNode);
@@ -211,7 +201,7 @@ function $remove(childNode) {
 /* ========================================================================== */
 
 function $replaceWith(childNode) {
-	// usage: $replaceWith(element, sibling1, sibling2, 'a new text node');
+	// $replaceWith(element, sibling1, sibling2, 'a new text node');
 
 	if (childNode.parentNode) {
 		childNode.parentNode.replaceChild(
@@ -226,27 +216,25 @@ function $replaceWith(childNode) {
 /* Emerging Event Functionality
 /* ========================================================================== */
 
-/* Dispatch an event on an element
+/* Create a new CustomEvent
 /* ========================================================================== */
 
-function $dispatch(type, element, detail) {
-	// usage: $dispatch('click', element);
-	// usage: $dispatch('custom', element, { some: 'detail value' });
+function $CustomEvent(type) {
+	// element.dispatchEvent(new $CustomEvent('click', { bubbles: true }));
 
 	const event = document.createEvent('CustomEvent');
+	const param = Object(arguments[1]) || { bubbles: false, cancelable: false, detail: undefined };
 
-	event.initCustomEvent(type, true, true, detail);
+	event.initCustomEvent(type, param.bubbles, param.cancelable, param.detail);
 
-	element.dispatchEvent(event);
-
-	return element;
+	return event;
 }
 
 /* Fetch response text from a URL and pass it to a callback
 /* ========================================================================== */
 
 function $fetch(url, callback) {
-	// usage: $fetch('api?foo=bar', (responseText) => {});
+	// $fetch('api?foo=bar', (responseText) => {});
 
 	const xhr = new XMLHttpRequest();
 
@@ -271,7 +259,7 @@ export {
 	$append,
 	$before,
 	$closest,
-	$dispatch,
+	$CustomEvent,
 	$empty,
 	$fetch,
 	$matches,
