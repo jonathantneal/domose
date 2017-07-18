@@ -1,5 +1,11 @@
 # Changes to Domose
 
+### 0.3.0 (July 18, 2017)
+
+- Pre-release version
+- Replaced `$dispatch` with `$CustomEvent` to better match native DOM
+- Removed namespacing sugar from `$assign`
+
 ### 0.2.0 (July 18, 2017)
 
 - Pre-release version
