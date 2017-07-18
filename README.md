@@ -9,63 +9,74 @@ you delicious DOM functionality in every browser.
 npm install domose --save
 ```
 
-Half of this stuff should be native, and I hope one day it is. The other half
-is here because I still support IE9 or Edge often enough. The good news is,
-it’s all modular, so you can just use the parts you need, and it’s also super
-tiny, so even using the whole thing costs less than 1 kilobyte.
+Some of this stuff should be native, and I hope one day it is. Other stuff here
+is native, so only use it when you still need to support IE9 or Edge and can’t
+justify the polyfill. Everything here is modular, so you can just use the parts
+you need. Everything is also super tiny, so even using the whole thing costs
+less than 1 kilobyte.
+
+## Speculative DOM Functionality
 
 Here are some no-nonsense explanations about new functionality you’ll get.
 
-### The $ Method
+### The $assign Method
 
-The `$` method creates or updates an element with attributes, events, and
-children. It returns the element.
-
-```js
-import { $ } from 'domose';
-
-$(element, { arialabel: 'some element', onclick: () => { /* do something */ } });
-$('button', { arialabel: 'new element', class: 'btn' }, [ child1, child2 ]);
-$('svg http://www.w3.org/2000/svg', { dataval: 'a data value' });
-```
-
-Did I mention that `arialabel` becomes `aria-label` and `dataval` becomes
-`data-val`? I think that’s kinda cool.
-
-**Cost**: Up to 278 bytes to your gzipped script.
-
-### The $_ Method
-
-The `$_` method removes attributes and events from an element. It returns the
-element.
+The `$assign` method assigns an element with attributes, events, and children.
+It returns the element.
 
 ```js
-import { $_ } from 'domose';
-
-$_(element, 'arialabel class');
-$_(element, { 0: 'arialabel', onclick: () => {} });
+import { $assign } from 'domose';
 ```
 
-Things like `arialabel` becomes `aria-label`, just like with the `$` method.
+Create an Element when the first argument is a string:
 
-**Cost**: Up to 176 bytes to your gzipped script.
+```js
+$assign('div');
+```
+
+Append nodes with the second argument onward:
+
+```js
+$assign(element, ...nodes);
+```
+
+Add event listeners with Function values in the second argument onward:
+
+```js
+$assign(element, { click: (event) => { console.log(event) } });
+```
+
+Or set dashed attributes from Object values:
+
+```js
+$assign(element, { aria: { label: 'This text is an aria label.' } });
+```
+
+Or set any other attribute:
+
+```js
+$assign(element, { role: 'button' });
+```
+
+I’ve proposed a native
+[`assign()`](https://github.com/whatwg/dom/issues/477) method.
+
+**Cost**: Up to 310 bytes to your gzipped script.
 
 ### The $empty Method
 
-The `$empty` method removes all the children in an element and optionally adds
-new children. It returns the element.
+The `$empty` method removes all children from an element.
 
 ```js
 import { $empty } from 'domose';
 
 $empty(element);
-$empty(element, [ child1, child2 ]);
-$empty(element, [ child1, 'a new text node' ]);
 ```
 
-We need a native `empty` method, I think.
+I’ve proposed a native
+[`empty()`](https://github.com/whatwg/dom/issues/479) method.
 
-**Cost**: Up to 88 bytes to your gzipped script.
+**Cost**: Up to 68 bytes to your gzipped script.
 
 ### The $wrapWith Method
 
@@ -75,18 +86,18 @@ element.
 ```js
 import { $wrapWith } from 'domose';
 
-$wrapWith(element, wrapper);
+$wrapWith(element, wrapperElement);
 ```
 
-We also need a native `wrapWith` method, wouldn’t you agree?
+I’ve proposed a native
+[`wrapWith()`](https://github.com/whatwg/dom/issues/479) method.
 
-**Cost**: Up to 75 bytes to your gzipped script.
+**Cost**: Up to 85 bytes to your gzipped script.
 
-## Modern DOM Methods
+## Emerging DOM Functionality
 
-You might also enjoy these DOM4+ methods. Use these when your supported
-browsers can’t do them on their own, and you’re not in a position to add a
-polyfill.
+Use these methods when your supported browsers can’t do them on their own, and
+when you’re not in a position to add a polyfill.
 
 ### The $after Method
 
@@ -96,8 +107,7 @@ If possible, use the native [`after`] method, which works in a similar way.
 ```js
 import { $after } from 'domose';
 
-$after(element, [ sibling1, sibling2 ]);
-$after(element, [ sibling1, 'a new text node' ]);
+$after(element, sibling1, sibling2, 'a new text node');
 ```
 
 **Cost**: Up to 98 bytes to your gzipped script.
@@ -110,8 +120,8 @@ possible, use the native [`append`] method, which works in a similar way.
 ```js
 import { $append } from 'domose';
 
-$append(element, [ child1, child2 ]);
-$append(element, [ child1, 'a new text node' ]);
+$append(element, child1, child2);
+$append(element, child1, 'a new text node');
 ```
 
 **Cost**: Up to 116 bytes to your gzipped script.
@@ -124,8 +134,7 @@ If possible, use the native [`before`] method, which works in a similar way.
 ```js
 import { $before } from 'domose';
 
-$before(element, [ sibling1, sibling2 ]);
-$before(element, [ sibling1, 'a new text node' ]);
+$before(element, sibling1, sibling2, 'a new text node');
 ```
 
 **Cost**: Up to 80 bytes to your gzipped script.
@@ -186,11 +195,10 @@ $replaceWith(element, replacer);
 
 **Cost**: Up to 63 bytes to your gzipped script.
 
-## Event Fallbacks
+## Emerging Event Functionality
 
-You might also enjoy these modern event methods. Use these when your supported
-browsers can’t do them on their own, and you’re not in a position to add a
-polyfill.
+Use these methods when your supported browsers can’t do them on their own, and
+you’re not in a position to add a polyfill.
 
 ### The $dispatch Method
 
@@ -210,7 +218,7 @@ $dispatch('custom', element, { some: 'detail value' });
 ### The $fetch Method
 
 The `$fetch` method fetches response text from a URL and passes it to a
-callback. It returns the XHR request, which is how it works. If possible,
+callback. It returns the XHR request (which is how it works). If possible,
 please use the native `fetch` method, which is totally better than this.
 
 ```js

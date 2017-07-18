@@ -1,137 +1,232 @@
-/* Creates or updates an element with attributes, events, and children
+/* Speculative DOM Functionality
 /* ========================================================================== */
 
-function $(id, attrs, children) {
-	// usage: $(element, { arialabel: 'some element', onclick: () => {} });
-	// usage: $('div', { arialabel: 'new element', class: 'btn' }, [ child1, child2 ]);
-	// usage: $('svg http://www.w3.org/2000/svg', { dataval: 'a data value' });
+function __assignSource(element, source, prefix) {
+	for (let key in source) {
+		if ('function' === typeof source[key]) {
+			// add event listeners that are functions
+			element.addEventListener(prefix + key, source[key]);
+		} else if (Object(source[key]) === source[key]) {
+			// set attributes with prefixes
+			__assignSource(element, source[key], `${prefix + key}-`);
+		} else if (/ /.test(key)) {
+			// set namespaced attributes
+			element.setAttributeNS(
+				(prefix + key).replace(/.* /, ''),
+				(prefix + key).replace(/ .*/, ''),
+				source[key]
+			);
+		} else {
+			// set attributes
+			element.setAttribute(prefix + key, source[key]);
+		}
+	}
+}
 
-	const element = id instanceof Node ? id : /:/.test(id) ? document.createElementNS(
+/* Assign an element with attributes, events, and children
+/* ========================================================================== */
+
+function $assign(id) {
+	// usage: $(element, { class: 'btn', click: () => { /* listener */ } });
+	// usage: $('button', { aria: { label: 'title' } }, child);
+	// usage: $('div', child1, child2, 'a new text node');
+	// usage: $('http://www.w3.org/2000/svg|svg');
+
+	const element = id instanceof Element ? id : / /.test(id) ? document.createElementNS(
 		id.replace(/.* /, ''),
 		id.replace(/ .*/, '')
 	) : document.createElement(id);
 
-	for (let attr in attrs) {
-		if (/^on/.test(attr)) {
-			element.addEventListener(
-				attr.replace(/^on/, ''),
-				attrs[attr]
-			);
-		} else if (/ /.test(attr)) {
-			element.setAttributeNS(
-				attr.replace(/.* /, ''),
-				attr.replace(/ .*/, ''),
-				attrs[attr]
+	[].slice.call(arguments, 1).forEach((source) => {
+		if (source instanceof Node) {
+			// append sources that are nodes
+			element.appendChild(source);
+		} else if ('string' === typeof source) {
+			// append strings as text nodes
+			element.appendChild(
+				document.createTextNode(source)
 			);
 		} else {
-			element.setAttribute(
-				attr.replace(/^(aria|data)/, '$&-'),
-				attrs[attr]
-			);
+			__assignSource(element, source, '');
 		}
-	}
-
-	$append(element, children);
+	});
 
 	return element;
 }
 
-/* Removes attributes and events from an element
+/* Remove all the children from a parent node and optionally add new children
 /* ========================================================================== */
 
-function $_(element, srcattrs) {
-	// usage: $_(element, 'arialabel class');
-	// usage: $_(element, { 0: 'arialabel', onclick: () => {} });
+function $empty(parentNode) {
+	// usage: $empty(element);
 
-	const attrs = 'string' === typeof srcattrs ? srcattrs.split(' ') : srcattrs;
+	while (parentNode.lastChild) {
+		parentNode.removeChild(parentNode.lastChild);
+	}
 
-	for (let attr in attrs) {
-		if (/^on/.test(attr)) {
-			element.removeEventListener(
-				attr.replace(/^on/, ''),
-				attrs[attr]
-			);
+	return parentNode;
+}
+
+/* Wrap a child node within an element
+/* ========================================================================== */
+
+function $wrapWith(childNode, element) {
+	// usage: $wrapWith(element, wrappingElement);
+
+	if (childNode.parentNode) {
+		childNode.parentNode.insertBefore(element, childNode).appendChild(childNode);
+	}
+
+	return childNode;
+}
+
+/* Emerging DOM Functionality
+/* ========================================================================== */
+
+function __asFragment(nodes) {
+	const fragment = document.createDocumentFragment();
+
+	[].slice.call(nodes, 1).forEach((node) => {
+		if (node instanceof Node) {
+			fragment.appendChild(node);
 		} else {
-			element.removeAttribute(
-				attrs[attr].replace(/.* /, '').replace(/^(aria|data)/, '$&-')
+			fragment.appendChild(
+				document.createTextNode(node)
 			);
 		}
-	}
+	});
 
-	return element;
+	return fragment;
 }
 
-/* Insert siblings after an element
+/* Insert nodes after a child node
 /* ========================================================================== */
 
-function $after(element, siblings) {
-	// usage: $after(element, [ sibling1, sibling2 ]);
-	// usage: $after(element, [ sibling1, 'a new text node' ]);
+function $after(childNode) {
+	// usage: $after(element, sibling1, sibling2, 'a new text node');
 
-	for (let index in siblings) {
-		element.parentNode.insertBefore(siblings[index], element.nextElementSibling);
+	if (childNode.parentNode) {
+		childNode.parentNode.insertBefore(
+			__asFragment(arguments),
+			childNode.nextSibling
+		);
 	}
 
-	return element;
+	return childNode;
 }
 
-/* Appends children to an element
+/* Appends nodes to a parent node
 /* ========================================================================== */
 
-function $append(element, children) {
-	// usage: $append(element, [ child1, child2 ]);
-	// usage: $append(element, [ child1, 'a new text node' ]);
+function $append(parentNode) {
+	// usage: $append(parentNode, child1, child2, 'a new text node');
 
-	for (let index in children) {
-		element.appendChild(
-			$asNode(children[index])
+	parentNode.append(
+		__asFragment(arguments)
+	);
+
+	return parentNode;
+}
+
+/* Insert nodes before an element
+/* ========================================================================== */
+
+function $before(element) {
+	// usage: $before(element, sibling1, sibling2, 'a new text node');
+
+	if (element.parentNode) {
+		element.parentNode.insertBefore(
+			__asFragment(arguments),
+			element
 		);
 	}
 
 	return element;
 }
 
-/* Returns content as an Element or Text Node
+/* Return the closest ancestor element matching a given selector
 /* ========================================================================== */
 
-function $asNode(content) {
-	return content instanceof Node ? content : document.createTextNode(content);
-}
+function $closest(element, selectors) {
+	// usage: $closest(element, selectors);
 
-/* Insert siblings before an element
-/* ========================================================================== */
+	let target = element;
 
-function $before(element, siblings) {
-	// usage: $before(element, [ sibling1, sibling2 ]);
-	// usage: $before(element, [ sibling1, 'a new text node' ]);
-
-	for (let index in siblings) {
-		element.parentNode.insertBefore(siblings[index], element);
-	}
-
-	return element;
-}
-
-/* Returns the closest ancestor element that matches a given selector
-/* ========================================================================== */
-
-function $closest(srcelement, selector) {
-	// usage: $closest(element, selector);
-
-	let element = srcelement;
-
-	while (element && 1 === element.nodeType) {
-		if ($matches(element, selector)) {
-			return element;
+	while (target && 1 === target.nodeType) {
+		if ($matches(target, selectors)) {
+			return target;
 		}
 
-		element = element.parentNode;
+		target = target.parentNode;
 	}
 
 	return null;
 }
 
-/* Dispatches an event on an element
+/* Return whether or not a DOM element matches a given selector
+/* ========================================================================== */
+
+function $matches(element, selectors) {
+	// usage: $matches(element, selectors);
+
+	const elements = element.parentNode.querySelectorAll(selectors);
+
+	let index = 0;
+
+	while (elements[index] && elements[index] !== element) {
+		++index;
+	}
+
+	return Boolean(elements[index]);
+}
+
+/* Prepends a child to a parent node
+/* ========================================================================== */
+
+function $prepend(parentNode) {
+	// usage: $prepend(element, child1, child2, 'a new text node');
+
+	parentNode.insertBefore(
+		__asFragment(arguments),
+		parentNode.firstChild
+	);
+
+	return parentNode;
+}
+
+/* Remove a child node from its parent
+/* ========================================================================== */
+
+function $remove(childNode) {
+	// usage: $remove(element);
+
+	if (childNode.parentNode) {
+		childNode.parentNode.removeChild(childNode);
+	}
+
+	return childNode;
+}
+
+/* Replace a child node with nodes
+/* ========================================================================== */
+
+function $replaceWith(childNode) {
+	// usage: $replaceWith(element, sibling1, sibling2, 'a new text node');
+
+	if (childNode.parentNode) {
+		childNode.parentNode.replaceChild(
+			__asFragment(arguments),
+			childNode
+		);
+	}
+
+	return childNode;
+}
+
+/* Emerging Event Functionality
+/* ========================================================================== */
+
+/* Dispatch an event on an element
 /* ========================================================================== */
 
 function $dispatch(type, element, detail) {
@@ -147,34 +242,17 @@ function $dispatch(type, element, detail) {
 	return element;
 }
 
-/* Removes all the children of an element and optionally adds new children
-/* ========================================================================== */
-
-function $empty(element, children) {
-	// usage: $empty(element);
-	// usage: $empty(element, [ child1, child2 ]);
-	// usage: $empty(element, [ child1, 'a new text' ]);
-
-	while (element.lastChild) {
-		element.removeChild(element.lastChild);
-	}
-
-	$append(element, children);
-
-	return element;
-}
-
-/* Fetches response text from a URL and passes it to a callback
+/* Fetch response text from a URL and pass it to a callback
 /* ========================================================================== */
 
 function $fetch(url, callback) {
 	// usage: $fetch('api?foo=bar', (responseText) => {});
 
-	const xhr = $(new XMLHttpRequest(), {
-		onreadystatechange: () => {
-			if (4 === xhr.readyState && 200 === xhr.status) {
-				callback(xhr.responseText); // eslint-disable-line callback-return
-			}
+	const xhr = new XMLHttpRequest();
+
+	xhr.addEventListener('readystatechange', () => {
+		if (4 === xhr.readyState && 200 === xhr.status) {
+			callback(xhr.responseText); // eslint-disable-line callback-return
 		}
 	});
 
@@ -184,69 +262,20 @@ function $fetch(url, callback) {
 	return xhr;
 }
 
-/* Returns whether or not a DOM element matches a given selector
-/* ========================================================================== */
-
-function $matches(element, selector) {
-	// usage: $matches(element, selector);
-
-	const elements = (element.document || element.ownerDocument).querySelectorAll(selector);
-
-	let index = 0;
-
-	while (elements[index] && elements[index] !== element) {
-		++index;
-	}
-
-	return Boolean(elements[index]);
-}
-
-/* Removes an element from its parent
-/* ========================================================================== */
-
-function $remove(element) {
-	// usage: $remove(element);
-
-	return element.parentNode && element.parentNode.removeChild(element);
-}
-
-/* Replaces an element within another element
-/* ========================================================================== */
-
-function $replaceWith(element, replacer) {
-	// usage: $replaceWith(element, replacer);
-
-	element.parentNode.replaceChild($asNode(replacer), element);
-
-	return element;
-}
-
-/* Wraps an element within another element
-/* ========================================================================== */
-
-function $wrapWith(element, wrapper) {
-	// usage: $wrapWith(element, wrapper);
-
-	return element.parentNode.insertBefore(wrapper, element).appendChild(element);
-}
-
 /* Export
 /* ========================================================================== */
 
-export default $;
-
 export {
-	$,
-	$_,
+	$assign,
 	$after,
 	$append,
-	$asNode,
 	$before,
 	$closest,
 	$dispatch,
 	$empty,
 	$fetch,
 	$matches,
+	$prepend,
 	$remove,
 	$replaceWith,
 	$wrapWith
