@@ -8,3 +8,4 @@ node_modules
 !.travis.yml
 *.log*
 domose.cjs.js*
+package-lock.json*
