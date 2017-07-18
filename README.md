@@ -58,10 +58,21 @@ Or set any other attribute:
 $assign(element, { role: 'button' });
 ```
 
+And work with namespaced elements:
+
+```js
+$assign(
+  document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+  {
+    viewBox: '0 0 32 32'
+  }
+);
+```
+
 I’ve proposed a native
 [`assign()`](https://github.com/whatwg/dom/issues/477) method.
 
-**Cost**: Up to 310 bytes to your gzipped script.
+**Cost**: Up to 252 bytes to your gzipped script.
 
 ### The $empty Method
 
@@ -200,20 +211,19 @@ $replaceWith(element, replacer);
 Use these methods when your supported browsers can’t do them on their own, and
 you’re not in a position to add a polyfill.
 
-### The $dispatch Method
+### The $CustomEvent Method
 
-The `$dispatch` method dispatches an event on an element. It returns the
-element. If possible, probably use the native `new MouseEvent()`,
-`new CustomEvent()`, etc. methods, even though they're way uglier to write out.
+The `$CustomEvent` creates a custom event. If possible, probably use the native
+`new MouseEvent()`, `new CustomEvent()`, etc. methods.
 
 ```js
-import { $dispatch } from 'domose';
+import { $CustomEvent } from 'domose';
 
-$dispatch('click', element);
-$dispatch('custom', element, { some: 'detail value' });
+element.dispatchEvent(new $CustomEvent('click', { bubbles: true }));
+element.dispatchEvent(new $CustomEvent('foo', { detail: { bar: 'qux' } });
 ```
 
-**Cost**: Up to 116 bytes to your gzipped script.
+**Cost**: Up to 154 bytes to your gzipped script.
 
 ### The $fetch Method
 
