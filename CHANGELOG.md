@@ -1,5 +1,10 @@
 # Changes to Domose
 
+### 0.4.0 (July 26, 2017)
+
+- Pre-release version
+- Replaced `$empty` with `$replaceAll` to match an existing DOM concept
+
 ### 0.3.0 (July 18, 2017)
 
 - Pre-release version
