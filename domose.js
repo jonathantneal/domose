@@ -4,13 +4,13 @@
 function __assignSource(element, source, prefix) {
 	for (let key in source) {
 		if ('function' === typeof source[key]) {
-			// add event listeners that are functions
+			// add functions as event listeners
 			element.addEventListener(prefix + key, source[key]);
 		} else if (Object(source[key]) === source[key]) {
-			// set attributes with prefixes
+			// assign objects as source
 			__assignSource(element, source[key], `${prefix + key}-`);
 		} else {
-			// set attributes
+			// otherwise, set attributes
 			element.setAttribute(prefix + key, source[key]);
 		}
 	}
