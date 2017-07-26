@@ -44,15 +44,20 @@ function $assign(id) {
 	return element;
 }
 
-/* Remove all the children from a parent node and optionally add new children
+/* Replace all the children of a parent node with new children
 /* ========================================================================== */
 
-function $empty(parentNode) {
-	// $empty(element);
+function $replaceAll(parentNode) {
+	// $replaceAll(element);
+	// $replaceAll(element, child1, child2);
 
 	while (parentNode.lastChild) {
 		parentNode.removeChild(parentNode.lastChild);
 	}
+
+	parentNode.appendChild(
+		__asFragment(arguments)
+	);
 
 	return parentNode;
 }
@@ -260,11 +265,11 @@ export {
 	$before,
 	$closest,
 	$CustomEvent,
-	$empty,
 	$fetch,
 	$matches,
 	$prepend,
 	$remove,
+	$replaceAll,
 	$replaceWith,
 	$wrapWith
 };
