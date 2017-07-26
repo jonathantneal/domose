@@ -178,6 +178,20 @@ $matches(element, '.some-class');
 
 **Cost**: Up to 128 bytes to your gzipped script.
 
+### The $prepend Method
+
+The `$prepend` method prepends children to an element. It returns the element. If
+possible, use the native [`prepend`] method, which works in a similar way.
+
+```js
+import { $prepend } from 'domose';
+
+$prepend(element, child1, child2);
+$prepend(element, child1, 'a new text node');
+```
+
+**Cost**: Up to 182 bytes to your gzipped script.
+
 ### The $remove Method
 
 The `$remove` method removes an element from its parent. It returns the
