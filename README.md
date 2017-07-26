@@ -74,20 +74,21 @@ I’ve proposed a native
 
 **Cost**: Up to 252 bytes to your gzipped script.
 
-### The $empty Method
+### The $replaceAll Method
 
-The `$empty` method removes all children from an element.
+The `$replaceAll` method removes all children from an element, optionally
+appending new children.
 
 ```js
-import { $empty } from 'domose';
+import { $replaceAll } from 'domose';
 
-$empty(element);
+$replaceAll(element);
 ```
 
 I’ve proposed a native
-[`empty()`](https://github.com/whatwg/dom/issues/479) method.
+[`replaceAll()`](https://github.com/whatwg/dom/issues/479) method.
 
-**Cost**: Up to 68 bytes to your gzipped script.
+**Cost**: Up to 189 bytes to your gzipped script.
 
 ### The $wrapWith Method
 
