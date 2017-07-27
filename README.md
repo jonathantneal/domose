@@ -74,6 +74,28 @@ I’ve proposed a native
 
 **Cost**: Up to 252 bytes to your gzipped script.
 
+### The $dispatchEvent Method
+
+The `$dispatchEvent` method dispatches an event from an element.
+
+Unlike the native `dispatchEvent` method, it accepts a name of a custom event
+as the first parameter, and an event 
+
+```js
+import { $dispatchEvent } from 'domose';
+
+$dispatchEvent(element, new CustomEvent('my-event' { bubbles: true, detail: { foo: 'bar' } }));
+
+// or
+
+$dispatchEvent(element, 'my-event', { bubbles: true, detail: { foo: 'bar' } });
+```
+
+I’ve proposed this functionality for the native
+[`dispatchEvent()`](https://github.com/whatwg/dom/issues/483) method.
+
+**Cost**: Up to 190 bytes to your gzipped script.
+
 ### The $replaceAll Method
 
 The `$replaceAll` method removes all children from an element, optionally

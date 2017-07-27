@@ -44,6 +44,18 @@ function $assign(id) {
 	return element;
 }
 
+/* Dispatch an event from an Element
+/* ========================================================================== */
+
+function $dispatchEvent(element, event) {
+	// $dispatchEvent(element, new CustomEvent('foo', { bubbles: true }));
+	// $dispatchEvent(element, 'foo', { bubbles: true });
+
+	return element.dispatchEvent(
+		event instanceof Event ? event : $CustomEvent(event, arguments[1])
+	);
+}
+
 /* Replace all the children of a parent node with new children
 /* ========================================================================== */
 
@@ -265,6 +277,7 @@ export {
 	$before,
 	$closest,
 	$CustomEvent,
+	$dispatchEvent,
 	$fetch,
 	$matches,
 	$prepend,
