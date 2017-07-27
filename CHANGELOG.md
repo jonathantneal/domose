@@ -1,5 +1,10 @@
 # Changes to Domose
 
+### 0.5.0 (July 27, 2017)
+
+- Pre-release version
+- Add `$dispatchEvent` method that has ability to create CustomEvent
+
 ### 0.4.0 (July 26, 2017)
 
 - Pre-release version
